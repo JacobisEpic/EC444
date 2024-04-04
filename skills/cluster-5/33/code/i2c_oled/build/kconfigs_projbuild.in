@@ -1,0 +1,6 @@
+source "/Users/jacob/esp/esp-idf/components/bootloader/Kconfig.projbuild"
+source "/Users/jacob/esp/esp-idf/components/esp_app_format/Kconfig.projbuild"
+source "/Users/jacob/esp/esp-idf/components/esp_rom/Kconfig.projbuild"
+source "/Users/jacob/esp/esp-idf/components/esptool_py/Kconfig.projbuild"
+source "/Users/jacob/esp/esp-idf/components/partition_table/Kconfig.projbuild"
+source "/Users/jacob/Documents/EC444/Chin-Jacob/skills/cluster-5/33/code/i2c_oled/main/Kconfig.projbuild"

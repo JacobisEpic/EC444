@@ -1,0 +1,76 @@
+<!-- multi line graph: https://canvasjs.com/javascript-charts/multi-series-chart/ -->
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<script>
+window.onload = function() {
+    fetch("stocks_data.csv")
+    .then(response => response.text())
+    .then(parseCSV)
+    .then(data => {
+        let series = [
+            { name: "AMZN", type: "spline", dataPoints: [] },
+            { name: "FB", type: "spline", dataPoints: [] },
+            { name: "GOOGL", type: "spline", dataPoints: [] },
+            { name: "MSFT", type: "spline", dataPoints: [] }
+        ];
+
+        data.forEach(row => {
+            let seriesObj = series.find(s => s.name === row[1]);
+            if (seriesObj) {
+                seriesObj.dataPoints.push({ x: parseInt(row[0]), y: parseFloat(row[2]) });
+            }
+        });
+
+        renderChart(series);
+    });
+
+    function parseCSV(data) {
+        let rows = data.trim().split("\n");
+        return rows.map(row => row.split(","));
+    }
+
+    function renderChart(seriesData) {
+        var chart = new CanvasJS.Chart("chartContainer", {
+            animationEnabled: true,
+            title: {
+                text: "Stock Prices for Big Companies"
+            },
+            axisX: {
+                title: "Day"
+            },
+            axisY: {
+                title: "Price"
+            },
+            legend: {
+                cursor: "pointer",
+                fontSize: 16,
+                itemclick: toggleDataSeries
+            },
+            toolTip: {
+                shared: true
+            },
+            data: seriesData
+        });
+
+        chart.render();
+    }
+
+    function toggleDataSeries(e) {
+        if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+            e.dataSeries.visible = false;
+        } else {
+            e.dataSeries.visible = true;
+        }
+        chart.render();
+    }
+}
+</script>
+</head>
+<body>
+<div id="chartContainer" style="height: 300px; width: 100%;"></div>
+<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+</body>
+</html>
+

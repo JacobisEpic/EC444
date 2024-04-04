@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <h1>Temperature and Voltage Readings:</h1>
+    <div>Received: <span id="message_disp"></span></div>
+
+    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+    <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var socket = io();
+            var chart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                theme: "light2",
+                title: {
+                    text: "Temperature and Voltage Readings"
+                },
+                axisX: {
+                    title: "Time",
+                    valueFormatString: "HH:mm:ss",
+                    crosshair: {
+                        enabled: true,
+                        snapToDataPoint: true
+                    }
+                },
+                axisY: [{
+                    title: "Temperature (°C)",
+                    includeZero: false,
+                    crosshair: {
+                        enabled: true
+                    }
+                }, {
+                    title: "Voltage (V)",
+                    includeZero: false,
+                    suffix: "V",
+                    crosshair: {
+                        enabled: true
+                    },
+                    stripLines: [{
+                        value: 3.3,
+                        color: "#d32f2f",
+                        label: "Nominal Voltage"
+                    }]
+                }],
+                toolTip: {
+                    shared: true
+                },
+                data: [{
+                    type: "line",
+                    showInLegend: true,
+                    name: "Temperature",
+                    markerType: "square",
+                    xValueType: "dateTime",
+                    dataPoints: []
+                }, {
+                    type: "line",
+                    showInLegend: true,
+                    name: "Voltage",
+                    markerType: "square",
+                    xValueType: "dateTime",
+                    dataPoints: []
+                }]
+            });
+
+            chart.render();
+
+            socket.on('message', function (msg) {
+                var data = msg.split(" ");
+                var time = new Date().getTime();
+                var temperature = parseFloat(data[0]);
+                var voltage = parseFloat(data[1]);
+
+                var tempDataPoint = { x: time, y: temperature };
+                var voltageDataPoint = { x: time, y: voltage };
+
+                chart.options.data[0].dataPoints.push(tempDataPoint);
+                chart.options.data[1].dataPoints.push(voltageDataPoint);
+
+                if (chart.options.data[0].dataPoints.length > 10) {
+                    chart.options.data[0].dataPoints.shift();
+                    chart.options.data[1].dataPoints.shift();
+                }
+
+                chart.render();
+
+                var displayText = `Temperature: ${temperature}°C, Voltage: ${voltage}V`;
+                document.getElementById("message_disp").textContent = displayText;
+            });
+        });
+    </script>
+</body>
+
+</html>

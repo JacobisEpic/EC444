@@ -1,0 +1,13 @@
+# Target labels
+ bootloader
+# Source files and their labels
+/Users/jacob/Documents/EC444/Chin-Jacob/skills/cluster-1/10/code/uart_echo/build/CMakeFiles/bootloader
+/Users/jacob/Documents/EC444/Chin-Jacob/skills/cluster-1/10/code/uart_echo/build/CMakeFiles/bootloader.rule
+/Users/jacob/Documents/EC444/Chin-Jacob/skills/cluster-1/10/code/uart_echo/build/CMakeFiles/bootloader-complete.rule
+/Users/jacob/Documents/EC444/Chin-Jacob/skills/cluster-1/10/code/uart_echo/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
+/Users/jacob/Documents/EC444/Chin-Jacob/skills/cluster-1/10/code/uart_echo/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+/Users/jacob/Documents/EC444/Chin-Jacob/skills/cluster-1/10/code/uart_echo/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+/Users/jacob/Documents/EC444/Chin-Jacob/skills/cluster-1/10/code/uart_echo/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+/Users/jacob/Documents/EC444/Chin-Jacob/skills/cluster-1/10/code/uart_echo/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+/Users/jacob/Documents/EC444/Chin-Jacob/skills/cluster-1/10/code/uart_echo/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+/Users/jacob/Documents/EC444/Chin-Jacob/skills/cluster-1/10/code/uart_echo/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
