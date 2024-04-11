@@ -1,0 +1,72 @@
+<!-- code contributers: Celine Chen, Eric Chen, Jacob Chin, Nuo Lin-->
+
+<!-- views/index.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<!-- displays a table to show the user if the parking space is taken or not. The information is obtained and given by the server and we distinguished it by making taken red and not taken green-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Spot Availability</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        table {
+            width: 80%;
+            /* Adjust the width as needed */
+            border-collapse: collapse;
+            margin: 20px;
+            /* Adjust the margin as needed */
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="text-align: center;">Parking Spot Availability</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>MeterID</th>
+                <th>Status</th>
+                <th>FobID</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% documents.forEach((document, index) => { %>
+                <tr>
+                    <td><%= document.MeterID || index + 1 %></td>
+                    <td style="color: <%= document.Status.toLowerCase() === 'taken' ? 'red' : 'green' %>;"><%= document.Status %></td>
+                    <td><%= document.FobID %></td>
+                    <td><%= document.Timestamp %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
+    <script>
+        const socket = io();
+        // Event listener
+    </script>
+</body>
+
+</html>

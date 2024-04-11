@@ -1,0 +1,355 @@
+<!-- Developers: Celine Chen, Jacob Chin, Eric Chen, Nuo Lin -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seat Status Display</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            font-size: 24px;
+            font-family: Arial, sans-serif;
+        }
+        .seats-wrapper {
+            text-align: center;
+        }
+        .title {
+            text-align: top;
+            font-size: 64px;
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        .seat-container {
+            display: inline-block;
+            text-align: center;
+            margin: 50px;
+        }
+        .seat {
+            width: 350px;
+            height: 350px;
+            border: 3px solid #000;
+            margin-bottom: 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex-direction: column;
+            border-radius: 15px;
+        }
+        .seat-title {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .Occupied {
+            background-color: red;
+        }
+        .Open {
+            background-color: green;
+        }
+        .Reserved {
+            background-color: red;
+        }
+        button {
+            padding: 20px 40px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        button:hover {
+            background-color: #007BFF;
+            color: white;
+            transform: scale(1.1);
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #F0F0F0;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            font-size: 14px;
+            color: #333;
+        }
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: black; }
+        }
+        .typed-out-title {
+            font-size: 64px;
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            border-right: 3px solid black;
+            white-space: nowrap;
+            overflow: hidden;
+            width: 24ch;
+            animation: typing 4s steps(24) infinite,
+                       blink-caret .75s step-end infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="typed-out-title">Team 1 Squigglies' Seat Occupancy System</div>
+    <div class="seats-wrapper">
+        <!-- Seat 1-->
+        <div class="seat-container">
+            <div class="seat-title">Seat 1</div>
+            <div class="seat open" data-seat="1"></div>
+            <button class="reserve1" onclick="toggleReservation1(1)">Reserve</button>
+        </div>
+        <!-- Seat 2-->
+        <div class="seat-container">
+            <div class="seat-title">Seat 2</div>
+            <div class="seat open" data-seat="2"></div>
+            <button class="reserve2" onclick="toggleReservation2(2)">Reserve</button>
+        </div>
+        <!-- Seat 3-->
+        <div class="seat-container">
+            <div class="seat-title">Seat 3</div>
+            <div class="seat open" data-seat="3"></div>
+            <button class="reserve3" onclick="toggleReservation3(3)">Reserve</button>
+        </div>
+    </div>
+    <footer>
+        &copy; Copyright by Team Squigglies. Created by Celine Chen, Eric Chen, Jacob Chin, and Nuo Lin.- FROM MQTT.JS
+    </footer>
+    <script type="text/javascript">
+        // Seat 1
+        function updateReservationStatus1(seat) {
+            // Set the initial button text after connecting
+            let reservationValue1 = localStorage.getItem('reservationValue1') || 1;
+            // Update Seat 1 background color based on the reservation value
+            const seat1Element = document.querySelector('.seat[data-seat="1"]');
+            const reserveButton = document.querySelector('.seat-container button.reserve1');
+            console.log("Pressed 1");
+            if (seat1Element && reserveButton) {
+                if (reservationValue1 == 1){
+                    console.log("Turning Red");
+                    seat1Element.classList.add('Reserved');
+                    seat1Element.style.backgroundColor = 'red'; // Set background color to red for Reserved status
+                    reserveButton.innerText = 'Unreserve'; // Change button text to 'Unreserve'
+                } else if (reservationValue1 == 0){
+                    console.log("Turning Green");
+                    seat1Element.classList.add('Open');
+                    seat1Element.style.backgroundColor = 'green';
+                    reserveButton.innerText = 'Reserve'; // Change button text to 'Reserve'
+                }
+            }
+        }
+        // Seat 2
+        function updateReservationStatus2(seat) {
+            // Set the initial button text after connecting
+            let reservationValue2 = localStorage.getItem('reservationValue2') || 1;
+            // Update Seat 2 background color based on the reservation value
+            const seat2Element = document.querySelector('.seat[data-seat="2"]');
+            const reserveButton = document.querySelector('.seat-container button.reserve2');
+            console.log("Pressed 2");
+            if (seat2Element && reserveButton) {
+                if (reservationValue2 == 1){
+                    console.log("Turning Red");
+                    seat2Element.classList.add('Reserved');
+                    seat2Element.style.backgroundColor = 'red'; // Set background color to red for Reserved status
+                    reserveButton.innerText = 'Unreserve'; // Change button text to 'Unreserve'
+                } else if (reservationValue2 == 0){
+                    console.log("Turning Green");
+                    seat2Element.classList.add('Open');
+                    seat2Element.style.backgroundColor = 'green';
+                    reserveButton.innerText = 'Reserve'; // Change button text to 'Reserve'
+                }
+            }
+        }
+        // Seat 3
+        function updateReservationStatus3(seat) {
+            // Set the initial button text after connecting
+            let reservationValue3 = localStorage.getItem('reservationValue3') || 1;
+            // Update Seat 3 background color based on the reservation value
+            const seat3Element = document.querySelector('.seat[data-seat="3"]');
+            const reserveButton = document.querySelector('.seat-container button.reserve3');
+            if (seat3Element && reserveButton) {
+                if (reservationValue3 == 1){
+                    console.log("Turning Red");
+                    seat3Element.classList.add('Reserved');
+                    seat3Element.style.backgroundColor = 'red'; // Set background color to red for Reserved status
+                    reserveButton.innerText = 'Unreserve'; // Change button text to 'Unreserve'
+                } else if (reservationValue3 == 0){
+                    console.log("Turning Green");
+                    seat3Element.classList.add('Open');
+                    seat3Element.style.backgroundColor = 'green';
+                    reserveButton.innerText = 'Reserve'; // Change button text to 'Reserve'
+                }
+            }
+        }
+
+        // Seat 1
+        function toggleReservation1(seat) {
+            if (reservationValue1 != 2) {
+                // Retrieve the reservationValue from local storage
+                let reservationValue1 = localStorage.getItem('reservationValue1') || 1;
+                console.log('Button clicked');
+                // Check if the client is connected
+                if (client1.isConnected()) {
+                    // Toggle the reservation value
+                    reservationValue1 = 1 - reservationValue1;
+                    // Create a message to be sent to the MQTT server
+                    const message = new Paho.MQTT.Message(reservationValue1.toString());
+                    message.destinationName = `/topic/seat1/receive`;
+                    message.qos = 2;
+                    // Publish the message to the MQTT server
+                    client1.send(message);
+                    // Save the updated reservation value to local storage
+                    localStorage.setItem('reservationValue1', reservationValue1);
+                    // Update the reservation status on the page
+                    updateReservationStatus1(seat);
+                } else {
+                    console.error('MQTT client is not connected.');
+                }
+            }
+        }
+
+        // Seat 2
+        function toggleReservation2(seat) {
+            if (reservationValue2 != 2) {
+                // Retrieve the reservationValue from local storage
+                let reservationValue2 = localStorage.getItem('reservationValue2') || 1;
+                console.log('Button clicked');
+                // Check if the client is connected
+                if (client1.isConnected()) {
+                    // Toggle the reservation value
+                    reservationValue2 = 1 - reservationValue2;
+                    // Create a message to be sent to the MQTT server
+                    const message = new Paho.MQTT.Message(reservationValue2.toString());
+                    message.destinationName = `/topic/seat2/receive`;
+                    message.qos = 2;
+                    // Publish the message to the MQTT server
+                    client1.send(message);
+                    // Save the updated reservation value to local storage
+                    localStorage.setItem('reservationValue2', reservationValue2);
+                    // Update the reservation status on the page
+                    updateReservationStatus2(seat);
+                } else {
+                    console.error('MQTT client is not connected.');
+                }
+            }
+        }
+
+        // Seat 3
+        function toggleReservation3(seat) {
+            if (reservationValue3!= 2) {
+                // Retrieve the reservationValue from local storage
+                let reservationValue3 = localStorage.getItem('reservationValue3') || 1;
+                console.log('Button clicked');
+                // Check if the client is connected
+                if (client1.isConnected()) {
+                    // Toggle the reservation value
+                    reservationValue3 = 1 - reservationValue3;
+                    // Create a message to be sent to the MQTT server
+                    const message = new Paho.MQTT.Message(reservationValue3.toString());
+                    message.destinationName = `/topic/seat3/receive`;
+                    message.qos = 2;
+                    // Publish the message to the MQTT server
+                    client1.send(message);
+                    // Save the updated reservation value to local storage
+                    localStorage.setItem('reservationValue3', reservationValue3);
+                    // Update the reservation status on the page
+                    updateReservationStatus3(seat);
+                } else {
+                    console.error('MQTT client is not connected.');
+                }
+            }
+        }
+
+        // Set the initial reservation status and button text
+        updateReservationStatus1(1);
+        updateReservationStatus2(2);
+        updateReservationStatus3(3);
+
+        // Create a client instance for MQTT
+        const client1 = new Paho.MQTT.Client('seatoccupancy.duckdns.org', 1883, 'clientId');
+        // Create WebSocket connection
+        const socket = new WebSocket('ws://localhost:3456');
+        // Connection opened for MQTT
+        client1.onConnectionLost = onConnectionLost;
+        client1.onMessageArrived = onMessageArrived;
+        client1.connect({ onSuccess: onConnect });
+        // Connection opened for WebSocket
+        socket.addEventListener('open', function (event) {
+            console.log('Connected to WS Server');
+        });
+        // Called when the client connects for MQTT
+        function onConnect() {
+            console.log('Connected to MQTT broker');
+            updateReservationStatus1(1);
+            updateReservationStatus2(2);
+            updateReservationStatus3(3);
+        }
+        // Called when the client loses its connection for MQTT
+        function onConnectionLost(responseObject) {
+            if (responseObject.errorCode !== 0) {
+                console.log('Connection lost:', responseObject.errorMessage);
+            }
+        }
+        // Listen for messages for WebSocket
+        socket.addEventListener('message', function (event) {
+            const data = JSON.parse(event.data);
+            console.log('Message from server:', data);
+            // Check if the message is for Seat 1 and update its status
+            if (data.seat) {
+                const seatElement = document.querySelector(`.seat[data-seat="${data.seat}"]`);
+                if (seatElement) {
+                    seatElement.innerHTML = `Status: ${data.status} <br>Temperature: ${data.temperature}°C`;
+                    seatElement.classList.remove('Occupied', 'Reserved');  // Remove other classes
+                    seatElement.classList.add('Open');  // Add the "open" class for simplicity
+                    if (data.status === "Occupied") {
+                        seatElement.style.backgroundColor = 'red';
+                        if (data.seat == 1) {
+                            reservationValue1 = 2;
+                        }
+                        else if (data.seat == 2) {
+                            reservationValue2 = 2;
+                        }
+                        else if (data.seat == 3) {
+                            reservationValue3 = 2;
+                        }
+                    } else if (data.status === "Open") {
+                        seatElement.style.backgroundColor = 'green';
+                        if (data.seat == 1) {
+                            reservationValue1 = 0;
+                        }
+                        else if (data.seat == 2) {
+                            reservationValue2 = 0;
+                        }
+                        else if (data.seat == 3) {
+                            reservationValue3 = 0;
+                        }
+                    }
+                }
+            }
+        });
+        // Function moved above its reference
+        function onMessageArrived(message) {
+            console.log('Message Arrived:', message.payloadString);
+        }
+    </script>
+    <script src="mqtt.js"></script>
+</body>
+</html>

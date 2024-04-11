@@ -1,0 +1,203 @@
+<!-- Authors: Eric Chen, Jacob Chin, Celine Chen, Weinuo Lin -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serial Data</title>
+  <style>
+    body { 
+      margin: 0; 
+      padding-bottom: 3rem; 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+    }
+
+  </style>
+
+  <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+  <script type="text/javascript" src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+  <!-- Socket.io -->
+  <script src="/socket.io/socket.io.js"></script>
+
+</head>
+<body>
+
+  <div id="userATempChart" style="width:100%; height:300px;"></div>
+  <div id="userAStepChart" style="width:100%; height:300px;"></div>
+  <div id="userBTempChart" style="width:100%; height:300px;"></div>
+  <div id="userBStepChart" style="width:100%; height:300px;"></div>
+  <div id="leaderboard" style="width:100%; height:300px;"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      let counter = 0;
+
+      // Variables for charts
+      var userATemp = [];
+      var userASteps = [];
+      var userBTemp = [];
+      var userBSteps = [];
+      var currTime = 0;
+      var totalStepsA = 0;
+      var totalStepsB = 0;
+      // Initialize charts here with default settings
+	  // USER A Temperature Chart
+			userATempChart = new CanvasJS.Chart("userATempChart", {
+				title: {
+					text: 'User A Temperature Chart'
+				},
+				axisX: {
+					title: 'Time'
+				},
+				axisY: {
+					title: 'Temperature'
+				},
+				data: [
+					{
+						type: "spline",
+						dataPoints: userATemp
+					}
+				]
+			});
+            userATempChart.render();
+            
+			// USER A Step Chart
+			userAStepChart = new CanvasJS.Chart("userAStepChart", {
+				title: {
+					text: 'User A Steps Chart'
+				},
+				axisX: {
+					title: 'Time'
+				},
+				axisY: {
+					title: 'Number of Steps'
+				},
+				data: [
+					{
+						type: "spline",
+						dataPoints: userASteps
+					}
+				]
+			});
+            userAStepChart.render();
+            
+			// USER B Temperature Chart
+            userBTempChart = new CanvasJS.Chart("userBTempChart", {
+				title: {
+					text: 'User B Temperature Chart'
+				},
+				axisX: {
+					title: 'Time'
+				},
+				axisY: {
+					title: 'Temperature'
+				},
+				data: [
+					{
+						type: "spline",
+						dataPoints: userBTemp
+					}
+				]
+			});
+            userBTempChart.render();
+            
+			// USER B Step Chart
+			userBStepChart = new CanvasJS.Chart("userBStepChart", {
+				title: {
+					text: 'User B Steps Chart'
+				},
+				axisX: {
+					title: 'Time'
+				},
+				axisY: {
+					title: 'Number of Steps'
+				},
+				data: [
+					{
+						type: "spline",
+						dataPoints: userBSteps
+					}
+				]
+			});
+            userBStepChart.render();
+
+			// Leaderboard bar graph 
+            leaderboard = new CanvasJS.Chart("leaderboard", {
+                animationEnabled: true,
+                title: {
+                    text: "Leaderboard"
+                },
+                axisX: {
+                    margin: 10,
+                    labelPlacement: "inside",
+                    tickPlacement: "inside"
+                },
+                axisY2: {
+                    title: "Steps",
+                    titleFontSize: 14,
+                    includeZero: true,
+                },
+                data: [{
+                    type: "bar",
+                    axisYType: "secondary",
+                    dataPoints: [
+                    { label: "User A", y: totalStepsA},
+                    { label: "User B", y: totalStepsB}
+                    ]
+                }]
+            });
+            leaderboard.render();
+
+      // Socket options
+      const socket = io({
+        auth: {
+          serverOffset: 0
+        },
+        ackTimeout: 10000,
+        retries: 3,
+      });
+
+    // Function that updates the chart data and replots
+    function updateChart(data) {
+        var dataArray = data.split(' ');
+        // Assuming dataArray[4] is a time value, it should be converted to a proper JavaScript Date object
+        var userATempDataPoint = { x: currTime, y: parseFloat(dataArray[0])};
+        var userAStepDataPoint = { x: currTime, y: parseFloat(dataArray[1])};
+        var userBTempDataPoint = { x: currTime, y: parseFloat(dataArray[2])};
+        var userBStepDataPoint = { x: currTime, y: parseFloat(dataArray[3])};
+        // Update the dataPoints for User A Temp Chart
+        userATemp.push(userATempDataPoint);
+        
+        // Update the dataPoints for User A Steps Chart
+        userASteps.push(userAStepDataPoint);
+
+        // Update the dataPoints for User B Temp Chart
+        userBTemp.push(userBTempDataPoint);
+
+        // Update the dataPoints for User B Steps Chart
+        userBSteps.push(userBStepDataPoint);
+
+        // Updates the leaderboard 
+        totalStepsA = parseFloat(dataArray[1]);
+        totalStepsB = parseFloat(dataArray[3]);
+        leaderboard.options.data[0].dataPoints = [
+            { label: "User A", y: totalStepsA},
+            { label: "User B", y: totalStepsB}
+        ];
+        
+        // Render the charts with the new data
+        userATempChart.render();
+        userAStepChart.render();
+        userBTempChart.render();
+        userBStepChart.render();
+        leaderboard.render();
+        currTime++;
+    }
+      //Receives data from the server and calls the function to update charts
+      socket.on('OurData', function (data) {
+      updateChart(data);
+      });
+    });
+    
+  </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Temperature Data Plot</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Create a canvas element for the plot -->
+    <canvas id="dataPlot" width="800" height="400"></canvas>
+
+    <script>
+        var ctx = document.getElementById('dataPlot').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Temperature',
+                    data: [],
+                    borderColor: 'red',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Time(seconds)'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Temperature(C)' 
+                        }
+                    }
+                }
+            }
+        });
+
+        chart.options.animation.duration = 0;  
+
+        function updateGraph() {
+            fetch('Temperature.csv')
+                .then(response => response.text())
+                .then(data => {
+                    const lines = data.trim().split('\n');
+
+                    // Only process new data points
+                    let newDataAdded = false;
+                    for(let index = chart.data.labels.length; index < lines.length; index++) {
+                        const value = parseFloat(lines[index].split(": ")[1]);
+                        chart.data.labels.push((index + 1)*10); 
+                        chart.data.datasets[0].data.push(value);
+                        newDataAdded = true;
+                    }
+
+                    if(newDataAdded) {
+                        chart.update();
+                    }
+                })
+                .catch(error => {
+                    console.error("There was an error fetching the CSV data:", error);
+                });
+
+            setTimeout(updateGraph, 10000); 
+        }
+
+        updateGraph();
+    </script>
+</body>
+</html>
