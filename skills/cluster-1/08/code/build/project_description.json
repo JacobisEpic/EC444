@@ -1,7 +1,7 @@
 {
     "version":            "1",
     "project_name":       "continuous_read",
-    "project_version":    "9beefa6-dirty",
+    "project_version":    "9eddf08-dirty",
     "project_path":       "/Users/jacob/Documents/EC444/Chin-Jacob/skills/cluster-1/08/code",
     "idf_path":           "/Users/jacob/esp/esp-idf",
     "build_dir":          "/Users/jacob/Documents/EC444/Chin-Jacob/skills/cluster-1/08/code/build",
